@@ -1,16 +1,18 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from database import engine
-from routers import auth
+from src.routers import auth
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     yield
     await engine.dispose()
+
 
 app = FastAPI()
 

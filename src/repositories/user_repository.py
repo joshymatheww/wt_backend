@@ -1,16 +1,17 @@
 from sqlalchemy import func, select
 
+from src.models.user import User
+from src.schemas.token import UserCreate, UserResponse
+from src.utils.auth import hash_password
+
 from .base import BaseRepository
-from models.user import User
-from schemas.token import UserCreate, UserResponse
-from utils.auth import hash_password
 
 
 class UserRepository(BaseRepository):
     async def create_user(self, user_data: UserCreate) -> UserResponse:
         new_user = User(
             **user_data.model_dump(exclude={"password"}, exclude_none=True),
-            password_hash=hash_password(user_data.password)
+            password_hash=hash_password(user_data.password),
         )
 
         self.session.add(new_user)

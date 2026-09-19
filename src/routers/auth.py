@@ -5,28 +5,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
 from database import get_db
-from middlewares.auth import auth
-from models.user import User
-from schemas.token import TokenRequest, TokenResponse, UserCreate, UserResponse
-from services.user_services import UserService
+from src.middlewares.auth import auth
+from src.models.user import User
+from src.schemas.token import TokenRequest, TokenResponse, UserCreate, UserResponse
+from src.services.user_services import UserService
 
 router = APIRouter()
 
 
 @router.post("/token", response_model=TokenResponse)
 async def genereate_user_token(
-        request: TokenRequest,
-        db: Annotated[AsyncSession, Depends(get_db)]):
+    request: TokenRequest, db: Annotated[AsyncSession, Depends(get_db)]
+):
     return await UserService(session=db).login(login_details=request)
 
 
-@router.post("/create-admin", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_admin(db: Annotated[AsyncSession(), Depends(get_db)]):
+@router.post(
+    "/create-admin", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
+async def create_admin(db: Annotated[AsyncSession, Depends(get_db)]):
     user_details = UserCreate(
         first_name=settings.admin_first_name,
         last_name=settings.admin_last_name,
         email=settings.admin_email,
-        password=settings.admin_password
+        password=settings.admin_password,
     )
 
     return await UserService(session=db).signup(user_details=user_details)

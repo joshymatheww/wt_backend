@@ -1,5 +1,6 @@
+from datetime import UTC, datetime, timedelta
+
 import jwt
-from datetime import datetime, timedelta, UTC
 from pwdlib import PasswordHash
 
 from config import settings
@@ -28,7 +29,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     encoded_jwt = jwt.encode(
         to_encode,
         settings.jwt_secret_key.get_secret_value(),
-        algorithm=settings.algorithm
+        algorithm=settings.algorithm,
     )
     return encoded_jwt
 
@@ -39,7 +40,7 @@ def verify_token(token: str) -> str | None:
             token,
             settings.jwt_secret_key.get_secret_value(),
             algorithms=[settings.algorithm],
-            options={"require": ["exp", "sub"]}
+            options={"require": ["exp", "sub"]},
         )
     except jwt.InvalidTokenError:
         return None
